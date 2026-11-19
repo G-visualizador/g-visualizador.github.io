@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VISUAL v1.3</title>
+<style>
+:root{--blur:18px;--a:.22;--rgb:255,255,255;--min:230px;--dim:0;--bgblur:0px;--sat:1;--rad:20px;--maxw:1000px;--gap:16px;--zoom:1.06;--bo:.3;--sh:.4;--ff:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+html{background:#000}
+body{margin:0;min-height:100vh;color:#fff;font-family:var(--ff);padding:18px}
+body.tsh{text-shadow:0 1px 6px rgba(0,0,0,.45)}
+#bg{position:fixed;inset:-30px;z-index:-1;background:#000 url("__BG__") center/cover no-repeat;filter:blur(var(--bgblur)) brightness(calc(1 - var(--dim))) saturate(var(--sat))}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;text-shadow:inherit}
+:focus-visible{outline:2px solid #fff;outline-offset:3px}
+[hidden]{display:none!important}
+h1,h2,h3,p{margin:0}
+.glass{background:linear-gradient(135deg,rgba(var(--rgb),calc(var(--a)*1.2)),rgba(var(--rgb),calc(var(--a)*.3)) 55%,rgba(var(--rgb),calc(var(--a)*.65)));-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);border:1px solid rgba(255,255,255,var(--bo));box-shadow:inset 0 1.5px 1px rgba(255,255,255,.6),inset 0 -1.5px 2px rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,var(--sh))}
+body.solid .glass{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(22,26,40,.9)}
+.z{transition:transform .22s cubic-bezier(.2,.9,.3,1.2),filter .2s,background .2s,border-color .2s}
+body.zoom .z:hover,body.zoom .z:focus-visible{transform:scale(var(--zoom));z-index:3;filter:brightness(1.22)}
+.z:active{transform:scale(.97)!important}
+body.noanim .z,body.noanim .tk,body.noanim .tk::after{transition:none}
+.app{max-width:var(--maxw);margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+#hd{font-size:24px;letter-spacing:.5px}
+.hr{display:flex;gap:10px;align-items:center}
+#greet{opacity:.85;margin:-6px 0 12px;font-size:14px}
+.ic{width:44px;height:44px;border-radius:50%;font-size:18px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.ch{padding:8px 18px;border-radius:999px;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.ch.on{--a:.42;border-color:rgba(255,255,255,.75)}
+.tabs,.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.av{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000}
+.bar{display:flex;gap:10px;margin-bottom:12px}
+.in{width:100%;padding:11px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);outline:0;-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+.in:focus{border-color:rgba(255,255,255,.75);background:rgba(255,255,255,.16)}
+.bar .in{border-radius:999px;padding:13px 22px;flex:1;min-width:0;box-shadow:inset 0 1.5px 1px rgba(255,255,255,.5),0 10px 30px rgba(0,0,0,.35)}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.7)}
+.go{padding:0 26px;border-radius:999px;font-weight:600}
+.sec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
+.sec h2{font-size:17px;flex:1}
+.sec .in{width:180px;padding:8px 14px;border-radius:999px}
+.grid{display:grid;gap:var(--gap);grid-template-columns:repeat(auto-fill,minmax(var(--min),1fr))}
+.grid.list{grid-template-columns:1fr}
+.card{position:relative;border-radius:var(--rad);padding:8px}
+.play{display:block;width:100%;padding:0;text-align:left}
+.list .play{display:flex;gap:14px;align-items:center}
+.list .thumb{width:min(220px,40%);flex:none}
+.list .name{padding:0 90px 0 0;font-size:15px}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:calc(var(--rad)*.7);overflow:hidden;background:#000}
+.thumb img,.rthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb::after{content:"";position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(255,255,255,.22) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 7l9 5-9 5z'/%3E%3C/svg%3E") center/70% no-repeat;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.45)}
+.name{display:block;padding:10px 6px 4px;font-size:14px;line-height:1.35}
+.nt .name{display:none}
+.mini{position:absolute;top:14px;width:30px;height:30px;border-radius:50%;padding:0;font-size:14px;line-height:1;z-index:2}
+.m1{left:14px}.m2{left:50px}.m3{right:14px}
+.row{display:flex;gap:14px;width:100%;padding:8px;border-radius:calc(var(--rad)*.8);text-align:left;align-items:center}
+.rthumb{flex:none;width:min(220px,40%);aspect-ratio:16/9;border-radius:calc(var(--rad)*.6);overflow:hidden;background:#000}
+.rtitle{font-weight:600;font-size:15px;line-height:1.35}
+.rchan{opacity:.8;font-size:13px;margin-top:6px}
+.stack{display:grid;gap:12px;margin-bottom:22px}
+.msg{padding:14px 16px;border-radius:16px;font-size:14px;line-height:1.5}
+.note{opacity:.8;font-size:13px;margin-top:16px}
+.lc{padding:14px;border-radius:var(--rad);display:flex;flex-direction:column;gap:10px}
+.lc h3{font-size:16px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ov{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;background:rgba(0,0,0,.9)}
+.top{display:flex;align-items:center;gap:8px;height:62px;padding:0 12px 0 16px;flex:none;border-radius:0;border-width:0 0 1px;overflow-x:auto}
+.top h2{flex:1;min-width:80px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .ic{width:40px;height:40px;font-size:15px;flex:none}
+.top .ch{flex:none;padding:7px 14px;font-size:13px}
+.stage{flex:1;min-height:0;background:#000}
+.stage iframe{width:100%;height:100%;border:0;display:block}
+.nbar{padding:8px 12px;border-radius:0;border-width:1px 0 0}
+.nbar .in{border-radius:999px;padding:9px 16px}
+.md{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.5)}
+.dlg{position:relative;width:min(940px,100%);height:min(660px,100%);display:flex;border-radius:30px;overflow:hidden;background:rgba(14,18,30,.62)}
+.nav{width:210px;flex:none;padding:16px 12px;display:flex;flex-direction:column;gap:6px;overflow:auto;border-right:1px solid rgba(255,255,255,.18)}
+.nv{padding:11px 16px;border-radius:14px;text-align:left;border:1px solid transparent}
+.nv:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3)}
+.nv.on{background:rgba(255,255,255,.26);border-color:rgba(255,255,255,.6)}
+.pane{flex:1;min-width:0;padding:22px 26px 26px;overflow:auto}
+.pane h2{font-size:20px;margin-bottom:12px}
+.cl{position:absolute;top:14px;right:14px;z-index:5}
+.sdlg{width:min(440px,100%);max-height:100%;overflow:auto;padding:22px;border-radius:26px;background:rgba(14,18,30,.7);display:flex;flex-direction:column;gap:12px}
+.sdlg h3{font-size:18px}
+.sdlg p{opacity:.9;line-height:1.5;font-size:14px}
+.err{color:#ffb4a8;font-size:13px;min-height:16px}
+.ctl{margin:12px 0}
+.ctl>label{display:block;font-size:13px;margin-bottom:5px;opacity:.9}
+.ctl .hint{font-size:12px;opacity:.7;margin-top:4px}
+.sw{display:flex!important;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;opacity:1!important;padding:6px 4px;font-size:14px!important}
+.sw input{display:none}
+.tk{width:46px;height:26px;border-radius:999px;position:relative;flex:none;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);transition:.2s}
+.tk::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:.2s}
+.sw input:checked+.tk{background:rgba(255,255,255,.5);border-color:rgba(255,255,255,.8)}
+.sw input:checked+.tk::after{left:22px}
+.rr{display:flex;align-items:center;gap:12px}
+.rr input{flex:1}
+.rv{min-width:38px;text-align:right;font-size:13px;opacity:.85}
+input[type=range]{-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3);outline:0;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:#fff}
+input[type=color]{height:42px;padding:3px;cursor:pointer}
+input[type=file]{font-size:13px}
+.gs{position:relative}
+.gb{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 16px;border-radius:14px;text-align:left}
+.gb::after{content:"";width:8px;height:8px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translateY(-2px);opacity:.8;flex:none}
+.gm,.pm{position:fixed;z-index:90;padding:6px;border-radius:18px;max-height:280px;overflow:auto;background:rgba(18,22,34,.78);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.5),0 16px 40px rgba(0,0,0,.55)}
+.go2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 14px;border-radius:12px;text-align:left;border:1px solid transparent;margin:2px 0}
+.go2:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45)}
+.go2.on{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.7)}
+.go2.on::after{content:"\2713";margin-left:10px}
+body.zoom .gm .z:hover,body.zoom .pm .z:hover{transform:scale(1.04)}
+.st{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:8px 0 14px}
+.st div{padding:12px;border-radius:16px;text-align:center}
+.st b{display:block;font-size:22px}
+.st span{font-size:12px;opacity:.8}
+.kb{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px}
+.kb kbd{padding:3px 10px;border-radius:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);font-size:12px;justify-self:start}
+.pane ul{padding-left:18px;line-height:1.7;font-size:14px;margin:6px 0}
+.who{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;margin-bottom:10px}
+.who .av{width:48px;height:48px;font-size:20px}
+.toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{padding:10px 20px;border-radius:999px;font-size:14px}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:999px;border:2px solid transparent;background-clip:padding-box}
+@media(max-width:700px){.dlg{flex-direction:column}.nav{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid rgba(255,255,255,.18);padding:12px 56px 12px 12px}.nv{white-space:nowrap}.rthumb,.list .thumb{width:38%}.sec .in{width:130px}}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="app" id="app">
+  <header class="hdr">
+    <h1 id="hd"></h1>
+    <div class="hr">
+      <button class="ch glass z" id="usr"></button>
+      <button class="ic glass z" id="cfg" title="Ajustes" aria-label="Ajustes">&#9881;</button>
+    </div>
+  </header>
+  <p id="greet" hidden></p>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="bar">
+    <input class="in" id="q" type="text" placeholder="Busca un vídeo o pega un enlace de YouTube  ( / )" aria-label="Buscar vídeo o pegar enlace" autocomplete="off">
+    <button class="go glass z" id="go">Buscar</button>
+  </div>
+  <div class="chips" id="srch"></div>
+  <section id="resBox" hidden>
+    <div class="sec"><h2 id="resT">Resultados</h2><button class="ch glass z" id="resX">Cerrar</button></div>
+    <div class="stack" id="res"></div>
+  </section>
+  <div id="main"></div>
+  <p class="note" id="note"></p>
+</div>
+
+<div class="ov" id="ov" hidden role="dialog" aria-modal="true" aria-label="Reproductor de vídeo">
+  <div class="top glass">
+    <button class="ic glass z" id="prev" aria-label="Anterior">&#9664;</button>
+    <h2 id="ttl">Vídeo</h2>
+    <button class="ic glass z" id="ofav" aria-label="Favorito">&#9734;</button>
+    <button class="ch glass z" id="olst">+ Lista</button>
+    <button class="ch glass z" id="alt">Otro modo</button>
+    <button class="ch glass z" id="copy">Copiar enlace</button>
+    <button class="ic glass z" id="next" aria-label="Siguiente">&#9654;</button>
+    <button class="ic glass z" id="close" aria-label="Cerrar">&#10005;</button>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="nbar glass" id="nbar"><input class="in" id="note2" type="text" placeholder="Escribe una nota sobre este vídeo (se guarda sola)…" autocomplete="off"></div>
+</div>
+<div id="mroot"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+const VERSION = "1.3", TITLE = "VISUAL v" + VERSION;
+// Vídeos fijos para todos (id = lo que va después de v= en el enlace)
+const VIDEOS = [{id:"q3uYpZ2BGNo",title:"Mi primer vídeo"}];
+// Clave de la API de YouTube (opcional). También se puede poner en Ajustes > Búsqueda.
+const API_KEY = "";
+
+(() => {
+const $ = id => document.getElementById(id);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e };
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch (e) { return d } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true } catch (e) { return false } },
+  del(k) { try { localStorage.removeItem(k) } catch (e) {} }
+};
+const SS = {
+  get(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } },
+  set(k, v) { try { sessionStorage.setItem(k, v) } catch (e) {} },
+  del(k) { try { sessionStorage.removeItem(k) } catch (e) {} }
+};
+
+const DEF = {
+  blur:18, alpha:22, tint:"#ffffff", border:30, shadow:40, rad:20, maxw:1000, gap:16, font:"sys", fscale:100, tsh:true, solid:false,
+  zoomOn:true, zoom:6, anim:true, head:TITLE, greet:true,
+  bgmode:"flor", grad:0, bgcol:"#101820", bgurl:"", bgpos:"center", dim:0, bgblur:0, sat:100,
+  host:"yt", auto:true, mute:false, cc:false, hl:"es", rel:false, loop:false, controls:true, kb:true, fsok:true, notes:true,
+  key:"", safe:"moderate", count:12, region:"ES", sorder:"relevance", keepSearches:true,
+  view:"grid", size:230, order:"recent", titles:true, autosave:true, showRnd:true, showFlt:true, showNote:true,
+  hist:true, histMax:50, startTab:"inicio", confirmDel:true
+};
+const THEMES = {
+  cristal:{tint:"#ffffff",alpha:22,blur:18,dim:0,sat:100,rad:20,border:30},
+  oscuro:{tint:"#000000",alpha:34,blur:22,dim:25,sat:100,rad:20,border:25},
+  calido:{tint:"#ffb27a",alpha:26,blur:22,dim:0,sat:110,rad:26,border:35},
+  oceano:{tint:"#7ad1ff",alpha:24,blur:20,dim:5,sat:110,rad:20,border:35},
+  violeta:{tint:"#c9a0ff",alpha:26,blur:24,dim:0,sat:115,rad:30,border:35},
+  plano:{tint:"#ffffff",alpha:14,blur:0,dim:10,sat:100,rad:8,border:20}
+};
+const GRADS = [
+  "linear-gradient(135deg,#0f2027,#203a43,#2c5364)", "linear-gradient(135deg,#ff512f,#dd2476)",
+  "linear-gradient(135deg,#1a2980,#26d0ce)", "radial-gradient(circle at 30% 20%,#6a11cb,#000 70%)",
+  "linear-gradient(135deg,#134e5e,#71b280)"
+];
+const FONTS = {
+  sys:'"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif',
+  serif:'Georgia,"Times New Roman",serif',
+  mono:'ui-monospace,Consolas,"Courier New",monospace',
+  round:'"Trebuchet MS","Segoe UI",system-ui,sans-serif'
+};
+const MENU = {
+look: [
+  ["theme","Tema rápido","sel",[["","Elegir un tema…"],["cristal","Cristal clásico"],["oscuro","Oscuro"],["calido","Cálido"],["oceano","Océano"],["violeta","Violeta"],["plano","Plano (sin desenfoque)"]]],
+  ["head","Título de la página","t"],
+  ["greet","Saludar con tu nombre al iniciar sesión","b"],
+  ["blur","Desenfoque del cristal","r",[0,40],1],
+  ["alpha","Transparencia del cristal","r",[4,50],1],
+  ["tint","Color del cristal","c"],
+  ["border","Brillo del borde","r",[0,80],1],
+  ["shadow","Intensidad de la sombra","r",[0,80],1],
+  ["rad","Redondeo de las esquinas","r",[0,40],1],
+  ["maxw","Ancho de la página","r",[600,1600],1],
+  ["gap","Separación entre elementos","r",[6,32],1],
+  ["font","Tipo de letra","sel",[["sys","Sistema"],["serif","Con serifa"],["mono","Monoespaciada"],["round","Redondeada"]]],
+  ["fscale","Tamaño del texto (%)","r",[80,130],1],
+  ["tsh","Sombra en el texto","b"],
+  ["solid","Cristal sólido (más fácil de leer)","b"],
+  ["zoomOn","Agrandar al pasar el cursor","b"],
+  ["zoom","Cuánto se agranda (%)","r",[1,15],1],
+  ["anim","Animaciones","b"]
+],
+bg: [
+  ["bgmode","Tipo de fondo","sel",[["flor","Flor de colores (original)"],["grad","Degradado"],["color","Color liso"],["img","Mi imagen (subir)"],["url","Imagen por enlace"]]],
+  ["grad","Degradado","sel",[["0","Aurora nocturna"],["1","Atardecer"],["2","Océano"],["3","Violeta"],["4","Bosque"]],1,0,"grad"],
+  ["bgcol","Color","c",0,0,0,"color"],
+  ["bgurl","Enlace de la imagen (https://…)","t",0,0,0,"url"],
+  ["","Subir una imagen de tu equipo","file",0,0,0,"img"],
+  ["bgpos","Posición de la imagen","sel",[["center","Centro"],["top","Arriba"],["bottom","Abajo"],["left","Izquierda"],["right","Derecha"]]],
+  ["dim","Oscurecer el fondo","r",[0,80],1],
+  ["bgblur","Desenfocar el fondo","r",[0,20],1],
+  ["sat","Saturación del fondo","r",[0,200],1]
+],
+play: [
+  ["host","Modo del reproductor (si da error, prueba los otros)","sel",[["yt","youtube.com"],["nc","youtube-nocookie.com"],["min","youtube.com (modo simple)"]]],
+  ["auto","Reproducir automáticamente","b"],
+  ["mute","Empezar sin sonido","b"],
+  ["cc","Subtítulos activados si existen","b"],
+  ["hl","Idioma de la interfaz y los subtítulos","sel",[["es","Español"],["en","Inglés"],["fr","Francés"],["de","Alemán"],["it","Italiano"],["pt","Portugués"]]],
+  ["rel","Mostrar vídeos relacionados al terminar","b"],
+  ["loop","Repetir el vídeo","b"],
+  ["controls","Mostrar los controles de YouTube","b"],
+  ["kb","Permitir atajos de teclado dentro del vídeo","b"],
+  ["fsok","Permitir pantalla completa","b"],
+  ["notes","Mostrar la barra de notas bajo el vídeo","b"]
+],
+search: [
+  ["key","Clave de la API de YouTube","p"],
+  ["safe","Búsqueda segura","sel",[["strict","Estricta"],["moderate","Moderada"],["none","Desactivada"]]],
+  ["count","Resultados por búsqueda","sel",[["6","6"],["12","12"],["24","24"]],1],
+  ["region","País de los resultados","sel",[["ES","España"],["MX","México"],["AR","Argentina"],["CO","Colombia"],["CL","Chile"],["PE","Perú"],["US","Estados Unidos"]]],
+  ["sorder","Ordenar resultados por","sel",[["relevance","Relevancia"],["date","Fecha"],["viewCount","Visitas"],["rating","Valoración"]]],
+  ["keepSearches","Recordar mis últimas búsquedas","b"]
+],
+mine: [
+  ["startTab","Pestaña al entrar","sel",[["inicio","Inicio"],["fav","Favoritos"],["listas","Listas"],["hist","Historial"]]],
+  ["view","Vista","sel",[["grid","Cuadrícula"],["list","Lista"]],0,1],
+  ["size","Tamaño de las miniaturas","sel",[["170","Pequeñas"],["230","Medianas"],["320","Grandes"]],1,1],
+  ["order","Orden","sel",[["recent","Más recientes primero"],["old","Más antiguos primero"],["az","De la A a la Z"],["za","De la Z a la A"],["fav","Favoritos primero"]],0,1],
+  ["titles","Mostrar los títulos","b",0,0,1],
+  ["autosave","Guardar automáticamente los vídeos que reproduzco","b"],
+  ["confirmDel","Pedir confirmación antes de borrar","b"],
+  ["hist","Guardar el historial","b"],
+  ["histMax","Vídeos que recuerda el historial","sel",[["25","25"],["50","50"],["100","100"]],1],
+  ["showRnd","Mostrar el botón Aleatorio","b",0,0,1],
+  ["showFlt","Mostrar el filtro","b",0,0,1],
+  ["showNote","Mostrar la nota de abajo","b"]
+]
+};
+
+// ---------- Cuentas (locales) y datos ----------
+let G = LS.get("vp_g", {gate:false});
+let users = LS.get("vp_users", {});
+let user = LS.get("vp_sess", null) || SS.get("vp_sess");
+if (user && !users[user]) user = null;
+let S, D, tab = "inicio", curList = null, fltVal = "", shown = [], cur = null;
+const nsKey = k => "vp_" + (user ? "u_" + user : "g") + "_" + k;
+const save = () => { LS.set(nsKey("cfg"), S); LS.set(nsKey("data"), D) };
+function loadNS() {
+  const cfg = LS.get(nsKey("cfg"), null) || (user ? {} : LS.get("vp_cfg", {}));
+  S = Object.assign({}, DEF, cfg);
+  if (/^VISUAL v\d+\.\d+$/.test(S.head)) S.head = TITLE;
+  let d = LS.get(nsKey("data"), null);
+  if (!d) d = {saved: user ? [] : (LS.get("vp_list", null) || LS.get("espinoso_videos_v1", [])), favs: user ? {} : (cfg.favs || {})};
+  D = Object.assign({saved:[], favs:{}, lists:{}, hist:[], notes:{}, searches:[]}, d);
+  delete S.favs;
+}
+const enc = new TextEncoder();
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+const rnd = () => hex(crypto.getRandomValues(new Uint8Array(12)));
+async function hashPw(pw, salt) {
+  try {
+    const k = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveBits"]);
+    return hex(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:enc.encode(salt), iterations:120000}, k, 256));
+  } catch (e) {
+    let h = 5381; const s = salt + pw;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    return "x" + h.toString(16);
+  }
+}
+function startSession(name, remember) {
+  user = name; LS.del("vp_sess"); SS.del("vp_sess");
+  remember ? LS.set("vp_sess", name) : SS.set("vp_sess", name);
+  loadNS(); tab = S.startTab; curList = null; renderAll();
+}
+async function register(name, pw, pw2, remember) {
+  name = name.trim().toLowerCase();
+  if (!/^[a-z0-9_.-]{3,20}$/.test(name)) return "El usuario debe tener de 3 a 20 caracteres: letras, números, punto, guion o guion bajo.";
+  if (users[name]) return "Ese usuario ya existe en este navegador.";
+  if (pw.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
+  if (pw !== pw2) return "Las contraseñas no coinciden.";
+  const salt = rnd();
+  users[name] = {salt, hash: await hashPw(pw, salt), created: Date.now(), display: name, color: "#7ad1ff"};
+  LS.set("vp_users", users); startSession(name, remember); return null;
+}
+async function login(name, pw, remember) {
+  name = name.trim().toLowerCase(); const u = users[name];
+  if (!u || await hashPw(pw, u.salt) !== u.hash) return "Usuario o contraseña incorrectos.";
+  startSession(name, remember); return null;
+}
+function logout() { user = null; LS.del("vp_sess"); SS.del("vp_sess"); loadNS(); tab = S.startTab; curList = null; renderAll(); toast("Sesión cerrada") }
+
+// ---------- Componentes de interfaz ----------
+function toast(t) { const e = el("div", "toast glass", t); $("toasts").appendChild(e); setTimeout(() => e.remove(), 2600) }
+function closeMenus() { document.querySelectorAll(".gm,.pm").forEach(n => n.remove()) }
+document.addEventListener("click", closeMenus);
+function place(m, r, w) {
+  const h = m.offsetHeight, left = Math.min(Math.max(8, r.left), innerWidth - w - 8);
+  const top = r.bottom + 6 + h > innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6;
+  m.style.cssText = "left:" + left + "px;top:" + top + "px;min-width:" + w + "px";
+}
+function gsel(opts, val, on) {
+  const w = el("div", "gs"), b = el("button", "gb glass z");
+  b.type = "button";
+  const lab = () => (opts.find(o => String(o[0]) === String(val)) || opts[0])[1];
+  b.textContent = lab();
+  b.onclick = e => {
+    e.stopPropagation(); closeMenus();
+    const m = el("div", "gm");
+    opts.forEach(o => {
+      const x = el("button", "go2 z" + (String(o[0]) === String(val) ? " on" : ""), o[1]);
+      x.type = "button";
+      x.onclick = ev => { ev.stopPropagation(); val = o[0]; b.textContent = lab(); closeMenus(); on(o[0]) };
+      m.appendChild(x);
+    });
+    document.body.appendChild(m);
+    const r = b.getBoundingClientRect(); place(m, r, r.width);
+  };
+  w.set = v => { val = v; b.textContent = lab() };
+  w.appendChild(b); return w;
+}
+function popMenu(anchor, items) {
+  closeMenus(); const m = el("div", "pm");
+  items.forEach(([t, f, on]) => {
+    const b = el("button", "go2 z" + (on ? " on" : ""), t);
+    b.onclick = e => { e.stopPropagation(); closeMenus(); f() };
+    m.appendChild(b);
+  });
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect(); place(m, r, Math.max(200, r.width));
+}
+function dlg(title, body, btns) {
+  const m = el("div", "md"), d = el("div", "sdlg glass");
+  d.appendChild(el("h3", "", title));
+  if (body) d.appendChild(body);
+  const close = () => m.remove();
+  if (btns && btns.length) {
+    const bar = el("div", "btns");
+    btns.forEach(([t, f, pri]) => { const b = el("button", "ch glass z" + (pri ? " on" : ""), t); b.onclick = () => f(close); bar.appendChild(b) });
+    d.appendChild(bar);
+  }
+  m.appendChild(d); m.onclick = e => { if (e.target === m) close() };
+  $("mroot").appendChild(m); return {close, root: d};
+}
+const ask = (msg, yes) => new Promise(res => {
+  dlg("Confirmar", el("p", "", msg), [["Cancelar", c => { c(); res(false) }], [yes || "Aceptar", c => { c(); res(true) }, 1]]);
+});
+const askText = (title, val, ph) => new Promise(res => {
+  const i = el("input", "in"); i.value = val || ""; i.placeholder = ph || "";
+  const d = dlg(title, i, [["Cancelar", c => { c(); res(null) }], ["Guardar", c => { c(); res(i.value.trim()) }, 1]]);
+  setTimeout(() => i.focus(), 40);
+  i.onkeydown = e => { if (e.key === "Enter") { d.close(); res(i.value.trim()) } };
+});
+const confirmDel = msg => S.confirmDel ? ask(msg, "Borrar") : Promise.resolve(true);
+
+// ---------- Ajustes ----------
+const reg = {};
+function field([k, label, type, opts, num, rr, dep]) {
+  const w = el("div", "ctl");
+  if (dep) w.dataset.dep = dep;
+  const done = () => { save(); apply(); if (rr) render() };
+  if (type === "b") {
+    const l = el("label", "sw z"), i = el("input"); i.type = "checkbox"; i.checked = !!S[k];
+    l.append(el("span", "", label), i, el("span", "tk"));
+    i.onchange = () => { S[k] = i.checked; done() };
+    reg[k] = () => { i.checked = !!S[k] }; w.appendChild(l); return w;
+  }
+  w.appendChild(el("label", "", label));
+  if (type === "sel") {
+    const g = gsel(opts, S[k] === undefined ? "" : S[k], v => {
+      if (k === "theme") { Object.assign(S, THEMES[v] || {}); Object.keys(reg).forEach(x => reg[x]()); g.set(""); done(); render(); return }
+      S[k] = num ? +v : v; done();
+    });
+    reg[k] = () => g.set(S[k] === undefined ? "" : S[k]); w.appendChild(g);
+  } else if (type === "r") {
+    const i = el("input"), o = el("span", "rv", S[k]), row = el("div", "rr");
+    i.type = "range"; i.min = opts[0]; i.max = opts[1]; i.value = S[k];
+    i.oninput = () => { S[k] = +i.value; o.textContent = i.value; done() };
+    reg[k] = () => { i.value = S[k]; o.textContent = S[k] };
+    row.append(i, o); w.appendChild(row);
+  } else if (type === "file") {
+    const i = el("input", "in"), b = el("button", "ch glass z", "Quitar mi imagen");
+    i.type = "file"; i.accept = "image/*"; b.style.marginTop = "8px";
+    i.onchange = () => loadImage(i.files[0]);
+    b.onclick = () => { LS.del(nsKey("img")); S.bgmode = "flor"; save(); Object.keys(reg).forEach(x => reg[x]()); apply(); toast("Imagen quitada") };
+    w.append(i, b);
+  } else {
+    const i = el("input", "in"); i.type = {c:"color", t:"text", p:"password"}[type]; i.value = S[k] || "";
+    if (type === "p") i.autocomplete = "off";
+    i.onchange = () => {
+      S[k] = i.value;
+      if (k === "bgurl" && i.value) { const im = new Image(); im.onerror = () => toast("No se pudo cargar esa imagen"); im.src = i.value }
+      done();
+    };
+    if (type === "c") i.oninput = () => { S[k] = i.value; done() };
+    reg[k] = () => { i.value = S[k] || "" }; w.appendChild(i);
+  }
+  return w;
+}
+function loadImage(f) {
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1920 / Math.max(im.width, im.height)), c = el("canvas");
+      c.width = im.width * k; c.height = im.height * k; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      try { localStorage.setItem(nsKey("img"), c.toDataURL("image/jpeg", .82)); S.bgmode = "img"; save(); Object.keys(reg).forEach(x => reg[x]()); apply(); toast("Fondo cambiado") }
+      catch (e) { toast("La imagen es demasiado grande para guardarla") }
+    };
+    im.onerror = () => toast("No he podido leer esa imagen"); im.src = fr.result;
+  };
+  fr.readAsDataURL(f);
+}
+const CATS = [["look","Aspecto"],["bg","Fondo"],["play","Reproductor"],["search","Búsqueda"],["mine","Mis vídeos"],["acc","Cuenta"],["data","Datos"],["keys","Atajos"],["about","Acerca de"]];
+function openSettings(cat) {
+  const old = $("st"); if (old) old.remove();
+  const m = el("div", "md"), d = el("div", "dlg glass"), nav = el("div", "nav"), pane = el("div", "pane");
+  m.id = "st";
+  function show(c) {
+    nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.c === c));
+    pane.innerHTML = ""; Object.keys(reg).forEach(k => delete reg[k]);
+    pane.appendChild(el("h2", "", CATS.find(x => x[0] === c)[1]));
+    if (MENU[c]) MENU[c].forEach(it => pane.appendChild(field(it))); else pane.appendChild(PANE[c]());
+    apply(); pane.scrollTop = 0;
+  }
+  CATS.forEach(([c, t]) => { const b = el("button", "nv z", t); b.dataset.c = c; b.onclick = () => show(c); nav.appendChild(b) });
+  const x = el("button", "ic glass z cl", "\u2715"); x.onclick = () => m.remove();
+  d.append(nav, pane, x); m.appendChild(d);
+  m.onclick = e => { if (e.target === m) m.remove() };
+  $("mroot").appendChild(m); show(cat || "look");
+}
+const btn = (t, f, pri) => { const b = el("button", "ch glass z" + (pri ? " on" : ""), t); b.onclick = f; return b };
+const PANE = {
+acc() {
+  const w = el("div");
+  if (user) {
+    const u = users[user], who = el("div", "who glass"), av = el("span", "av", (u.display || user)[0].toUpperCase());
+    av.style.background = u.color;
+    const t = el("div"); t.append(el("b", "", u.display || user), el("p", "hint", "Usuario: " + user + " · creada el " + new Date(u.created).toLocaleDateString("es-ES")));
+    who.append(av, t); w.appendChild(who);
+    const n = el("div", "ctl"), ni = el("input", "in"); ni.value = u.display || user;
+    n.append(el("label", "", "Nombre que se muestra"), ni); w.appendChild(n);
+    const c = el("div", "ctl"), ci = el("input", "in"); ci.type = "color"; ci.value = u.color;
+    c.append(el("label", "", "Color de tu avatar"), ci); w.appendChild(c);
+    const b = el("div", "btns");
+    b.append(
+      btn("Guardar perfil", () => { u.display = ni.value.trim() || user; u.color = ci.value; LS.set("vp_users", users); renderAll(); openSettings("acc"); toast("Perfil guardado") }, 1),
+      btn("Cambiar contraseña", changePw),
+      btn("Cerrar sesión", () => { logout(); openSettings("acc") }),
+      btn("Eliminar cuenta", delAccount)
+    );
+    w.appendChild(b);
+  } else {
+    w.appendChild(el("p", "msg glass", "Ahora estás como invitado. Con una cuenta, tus vídeos, listas, historial y ajustes se guardan por separado."));
+    const b = el("div", "btns");
+    b.append(btn("Entrar", () => openAuth("login"), 1), btn("Crear cuenta", () => openAuth("reg")));
+    w.appendChild(b);
+  }
+  w.appendChild(field(["", "Pedir inicio de sesión al entrar (puedes seguir como invitado)", "b"]));
+  const sw = w.lastChild.querySelector("input"); sw.checked = !!G.gate; sw.onchange = () => { G.gate = sw.checked; LS.set("vp_g", G) };
+  w.appendChild(el("p", "hint", "Importante: las cuentas son locales. Se guardan solo en este navegador (la contraseña va cifrada), no en un servidor. No uses una contraseña que uses en otros sitios."));
+  return w;
+},
+data() {
+  const w = el("div"), bytes = Object.keys(localStorage).filter(k => k.indexOf("vp_") === 0).reduce((n, k) => n + localStorage.getItem(k).length, 0);
+  const st = el("div", "st");
+  [[D.saved.length + VIDEOS.length, "vídeos"], [Object.keys(D.favs).length, "favoritos"], [Object.keys(D.lists).length, "listas"], [D.hist.length, "en el historial"], [Object.keys(D.notes).length, "notas"], [Math.round(bytes / 1024) + " KB", "ocupa"]]
+    .forEach(([n, l]) => { const d = el("div", "glass"); d.append(el("b", "", n), el("span", "", l)); st.appendChild(d) });
+  w.appendChild(st);
+  const io = el("textarea", "in"); io.rows = 4; io.placeholder = "Aquí aparece tu copia al exportar. Para importar, pega aquí una copia exportada.";
+  w.appendChild(io);
+  const b = el("div", "btns");
+  b.append(
+    btn("Exportar", () => { const c = Object.assign({}, S); delete c.key; io.value = JSON.stringify({v:VERSION, saved:D.saved, favs:D.favs, lists:D.lists, notes:D.notes, hist:D.hist, cfg:c}); io.select(); navigator.clipboard.writeText(io.value).then(() => toast("Copia copiada")).catch(() => toast("Selecciona el texto y copia con Ctrl+C")) }, 1),
+    btn("Importar", () => {
+      try {
+        const d = JSON.parse(io.value); let n = 0;
+        (d.saved || d.list || []).forEach(v => { if (v && /^[\w-]{11}$/.test(v.id) && !find(v.id)) { D.saved.push({id:v.id, title:String(v.title || "Vídeo " + v.id)}); n++ } });
+        Object.assign(D.favs, d.favs || {}); Object.assign(D.notes, d.notes || {});
+        Object.keys(d.lists || {}).forEach(k => { D.lists[k] = Array.from(new Set((D.lists[k] || []).concat(d.lists[k]))) });
+        if (d.cfg && typeof d.cfg === "object") { delete d.cfg.key; Object.assign(S, d.cfg) }
+        save(); renderAll(); toast("Importados " + n + " vídeos");
+      } catch (e) { toast("No he entendido esa copia") }
+    }),
+    btn("Borrar historial", async () => { if (await confirmDel("¿Borrar el historial?")) { D.hist = []; save(); render(); openSettings("data"); toast("Historial borrado") } }),
+    btn("Borrar búsquedas guardadas", () => { D.searches = []; LS.del("vp_cache"); save(); renderSearches(); toast("Búsquedas borradas") }),
+    btn("Borrar mis vídeos", async () => { if (await confirmDel("¿Borrar todos los vídeos que has añadido?")) { D.saved = []; D.favs = {}; D.lists = {}; save(); render(); openSettings("data"); toast("Vídeos borrados") } }),
+    btn("Restablecer ajustes", async () => { if (await ask("¿Restablecer todos los ajustes?", "Restablecer")) { S = Object.assign({}, DEF, {key:S.key}); save(); apply(); render(); openSettings("data"); toast("Ajustes restablecidos") } })
+  );
+  w.appendChild(b); return w;
+},
+keys() {
+  const k = el("div", "kb");
+  [["/", "Ir al buscador"], ["?", "Abrir esta lista de atajos"], [",", "Abrir los ajustes"], ["Esc", "Cerrar ventana o menú"], ["\u2190 \u2192", "Vídeo anterior o siguiente"], ["F", "Marcar como favorito (con el vídeo abierto)"], ["L", "Añadir a una lista (con el vídeo abierto)"], ["M", "Cambiar el modo del reproductor"]]
+    .forEach(([a, b]) => { k.append(el("kbd", "", a), el("span", "", b)) });
+  return k;
+},
+about() {
+  const w = el("div");
+  w.append(el("p", "msg glass", TITLE + " · hecho con HTML, CSS y JavaScript, sin servidor."));
+  const ul = el("ul");
+  ["Cuentas locales con contraseña cifrada (PBKDF2).", "Listas de reproducción, favoritos, notas e historial.", "Menús de cristal líquido y efecto de agrandar al acercar el cursor.", "Fondo personalizable: degradados, color, tu imagen o un enlace.", "Más de 60 ajustes y copia de seguridad.", "Lectura de enlaces de YouTube, de redirección de Google, Facebook y más."]
+    .forEach(t => ul.appendChild(el("li", "", t)));
+  w.append(ul, el("p", "hint", "Privacidad: todo lo que guardas se queda en este navegador. Los vídeos los sirve YouTube."));
+  return w;
+}
+};
+
+// ---------- Cuenta: pantallas ----------
+function openAuth(mode) {
+  let m = mode || "login"; const body = el("div"), sh = el("div");
+  const d = dlg("", body, []);
+  function draw() {
+    d.root.firstChild.textContent = m === "login" ? "Iniciar sesión" : "Crear cuenta";
+    body.innerHTML = "";
+    const tabs = el("div", "tabs");
+    tabs.append(btn("Entrar", () => { m = "login"; draw() }, m === "login"), btn("Registrarse", () => { m = "reg"; draw() }, m === "reg"));
+    const u = el("input", "in"), p = el("input", "in"), p2 = el("input", "in"), err = el("div", "err");
+    u.placeholder = "Usuario"; u.autocomplete = "username"; p.type = "password"; p.placeholder = "Contraseña"; p2.type = "password"; p2.placeholder = "Repite la contraseña";
+    const rem = el("label", "sw z"), ri = el("input"); ri.type = "checkbox"; ri.checked = true; rem.append(el("span", "", "Recordarme en este equipo"), ri, el("span", "tk"));
+    const go = btn(m === "login" ? "Entrar" : "Crear cuenta", async () => {
+      go.disabled = true; err.textContent = "";
+      const e = m === "login" ? await login(u.value, p.value, ri.checked) : await register(u.value, p.value, p2.value, ri.checked);
+      go.disabled = false;
+      if (e) err.textContent = e; else { d.close(); toast("Hola, " + (users[user].display || user)) }
+    }, 1);
+    const guest = btn("Continuar como invitado", () => d.close());
+    const stack = el("div", "ctl"); stack.append(u, el("div", "ctl"), p); if (m === "reg") stack.append(el("div", "ctl"), p2);
+    const bar = el("div", "btns"); bar.append(go, guest);
+    body.append(tabs, stack, rem, err, bar);
+    [u, p, p2].forEach(i => i.onkeydown = e => { if (e.key === "Enter") go.click() });
+    setTimeout(() => u.focus(), 40);
+  }
+  draw();
+}
+function changePw() {
+  const o = el("input", "in"), n = el("input", "in"), n2 = el("input", "in"), err = el("div", "err"), b = el("div");
+  [o, n, n2].forEach(i => { i.type = "password"; i.autocomplete = "off" });
+  o.placeholder = "Contraseña actual"; n.placeholder = "Contraseña nueva"; n2.placeholder = "Repite la nueva";
+  b.append(o, el("div", "ctl"), n, el("div", "ctl"), n2, err);
+  dlg("Cambiar contraseña", b, [["Cancelar", c => c()], ["Guardar", async c => {
+    const u = users[user];
+    if (await hashPw(o.value, u.salt) !== u.hash) { err.textContent = "La contraseña actual no es correcta."; return }
+    if (n.value.length < 6) { err.textContent = "La nueva debe tener al menos 6 caracteres."; return }
+    if (n.value !== n2.value) { err.textContent = "Las contraseñas nuevas no coinciden."; return }
+    u.salt = rnd(); u.hash = await hashPw(n.value, u.salt); LS.set("vp_users", users); c(); toast("Contraseña cambiada");
+  }, 1]]);
+}
+function delAccount() {
+  const p = el("input", "in"), err = el("div", "err"), b = el("div");
+  p.type = "password"; p.placeholder = "Tu contraseña"; b.append(el("p", "", "Se borrarán la cuenta y todos sus datos de este navegador."), el("div", "ctl"), p, err);
+  dlg("Eliminar cuenta", b, [["Cancelar", c => c()], ["Eliminar", async c => {
+    const u = users[user];
+    if (await hashPw(p.value, u.salt) !== u.hash) { err.textContent = "Contraseña incorrecta."; return }
+    ["cfg", "data", "img"].forEach(k => LS.del(nsKey(k))); delete users[user]; LS.set("vp_users", users); c(); logout(); toast("Cuenta eliminada");
+  }, 1]]);
+}
+function welcome() {
+  const ul = el("ul");
+  ["Pega un enlace de YouTube o busca por nombre (si activas la clave).", "Guarda favoritos, crea listas y consulta tu historial.", "Cambia el estilo y el fondo en Ajustes (el engranaje).", "Crea una cuenta para tener tus cosas separadas."].forEach(t => ul.appendChild(el("li", "", t)));
+  dlg("Bienvenido a " + TITLE, ul, [["Empezar", c => { LS.set("vp_welcomed", true); c() }, 1], ["Crear cuenta", c => { LS.set("vp_welcomed", true); c(); openAuth("reg") }]]);
+}
+
+// ---------- Aspecto ----------
+function applyBg() {
+  const b = $("bg").style, m = S.bgmode; b.background = "";
+  const u = m === "img" ? (() => { try { return localStorage.getItem(nsKey("img")) } catch (e) { return null } })() : m === "url" ? S.bgurl : null;
+  if (m === "grad") b.background = GRADS[S.grad] || GRADS[0];
+  else if (m === "color") b.background = S.bgcol;
+  else if ((m === "img" || m === "url") && u) b.background = '#000 url("' + u.replace(/"/g, "%22") + '") center/cover no-repeat';
+  b.backgroundPosition = S.bgpos;
+}
+function apply() {
+  const r = document.documentElement.style, n = parseInt(S.tint.slice(1), 16);
+  r.setProperty("--blur", S.blur + "px"); r.setProperty("--a", S.alpha / 100); r.setProperty("--rgb", (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255));
+  r.setProperty("--min", S.size + "px"); r.setProperty("--dim", S.dim / 100); r.setProperty("--bgblur", S.bgblur + "px"); r.setProperty("--sat", S.sat / 100);
+  r.setProperty("--rad", S.rad + "px"); r.setProperty("--maxw", S.maxw + "px"); r.setProperty("--gap", S.gap + "px");
+  r.setProperty("--zoom", 1 + S.zoom / 100); r.setProperty("--bo", S.border / 100); r.setProperty("--sh", S.shadow / 100); r.setProperty("--ff", FONTS[S.font] || FONTS.sys);
+  const c = document.body.classList;
+  c.toggle("noanim", !S.anim); c.toggle("zoom", !!S.zoomOn); c.toggle("tsh", !!S.tsh); c.toggle("solid", !!S.solid);
+  $("app").style.zoom = S.fscale / 100;
+  $("grid") && ($("grid").className = "grid" + (S.view === "list" ? " list" : "") + (S.titles ? "" : " nt"));
+  $("hd").textContent = S.head; $("hd").hidden = !S.head; document.title = S.head || TITLE;
+  $("note").textContent = "Los vídeos que reproduces se guardan en este navegador" + (user ? " (cuenta: " + user + ")." : ".") + " Usa Ajustes > Datos para hacer una copia."; $("note").hidden = !S.showNote;
+  const g = $("greet"); g.hidden = !(S.greet && user); if (user) g.textContent = "Hola, " + (users[user].display || user);
+  document.querySelectorAll("[data-dep]").forEach(w => { w.hidden = w.dataset.dep !== S.bgmode });
+  applyBg(); updUser();
+}
+function updUser() {
+  const b = $("usr"); b.innerHTML = "";
+  if (user) { const a = el("span", "av", (users[user].display || user)[0].toUpperCase()); a.style.background = users[user].color; b.append(a, document.createTextNode(users[user].display || user)) }
+  else b.textContent = "Entrar";
+}
+
+// ---------- Enlaces y búsqueda ----------
+function parseId(t) {
+  t = (t || "").trim().replace(/&amp;/g, "&");
+  for (let i = 0; i < 4; i++) { try { const d = decodeURIComponent(t); if (d === t) break; t = d } catch (e) { break } }
+  const m = t.match(/(?:youtu\.be\/|[?&\/]v[=\/]|\/embed\/|\/shorts\/|\/live\/|\/vi?\/|\/e\/|watch\/)([\w-]{11})(?![\w-])/);
+  return m ? m[1] : null;
+}
+const SHORT = /^(https?:\/\/)?(www\.)?(bit\.ly|goo\.gl|t\.co|tinyurl\.com|is\.gd|ow\.ly|buff\.ly|rb\.gy|cutt\.ly|lnkd\.in)\//i;
+const decode = s => { try { return new DOMParser().parseFromString(s, "text/html").documentElement.textContent } catch (e) { return s } };
+const all = () => VIDEOS.map(v => ({id:v.id, title:v.title})).concat(D.saved.filter(s => !VIDEOS.some(v => v.id === s.id)));
+const find = id => all().filter(v => v.id === id)[0];
+function fetchTitle(id, cb) {
+  try { fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + id)).then(r => r.json()).then(j => { if (j && j.title) cb(j.title) }).catch(() => {}) } catch (e) {}
+}
+const cget = q => { const a = LS.get("vp_cache", {}), e = a[q]; return e && Date.now() - e.t < 432e5 ? e.items : null };
+const cset = (q, items) => { const a = LS.get("vp_cache", {}); a[q] = {t:Date.now(), items}; const k = Object.keys(a); if (k.length > 30) delete a[k[0]]; LS.set("vp_cache", a) };
+function showRes(t, node) { $("resT").textContent = t; const b = $("res"); b.innerHTML = ""; b.appendChild(node); $("resBox").hidden = false }
+const msg = t => el("div", "msg glass", t);
+function renderRes(q, items) {
+  if (!items.length) { showRes("Resultados de «" + q + "»", msg("No he encontrado vídeos. Prueba con otras palabras.")); return }
+  const w = el("div", "stack"); w.style.margin = "0";
+  items.forEach(it => {
+    const b = el("button", "row glass z");
+    b.innerHTML = '<div class="rthumb"><img alt="" src="https://img.youtube.com/vi/' + it.id + '/mqdefault.jpg"></div><div><div class="rtitle"></div><div class="rchan"></div></div>';
+    b.querySelector(".rtitle").textContent = it.title; b.querySelector(".rchan").textContent = it.channel;
+    b.onclick = () => playSave(it.id, it.title); w.appendChild(b);
+  });
+  showRes("Resultados de «" + q + "»", w);
+}
+function search(q) {
+  const key = S.key || API_KEY;
+  if (!key) { showRes("Búsqueda por nombre no activada", msg("Para buscar por nombre hace falta una clave de la API de YouTube (Ajustes > Búsqueda). Mientras tanto, pega el enlace del vídeo.")); return }
+  if (S.keepSearches) { D.searches = [q].concat(D.searches.filter(x => x !== q)).slice(0, 8); save(); renderSearches() }
+  const k = [q.toLowerCase(), S.safe, S.count, S.region, S.sorder].join("|"), c = cget(k);
+  if (c) { renderRes(q, c); return }
+  showRes("Buscando…", msg("Buscando «" + q + "»…"));
+  fetch("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&safeSearch=" + S.safe + "&maxResults=" + S.count + "&order=" + S.sorder + "&regionCode=" + S.region + "&relevanceLanguage=" + S.hl + "&q=" + encodeURIComponent(q) + "&key=" + encodeURIComponent(key))
+    .then(r => r.json()).then(j => {
+      if (j.error) { const w = j.error.errors && j.error.errors[0] && j.error.errors[0].reason; showRes("No se pudo buscar", msg(w === "quotaExceeded" ? "Hoy se han agotado las búsquedas. Pega un enlace o prueba mañana." : "No se pudo buscar ahora mismo. Revisa la clave o inténtalo más tarde.")); return }
+      const it = (j.items || []).filter(i => i.id && i.id.videoId).map(i => ({id:i.id.videoId, title:decode(i.snippet.title), channel:decode(i.snippet.channelTitle)}));
+      cset(k, it); renderRes(q, it);
+    }).catch(() => showRes("Sin conexión", msg("No se pudo conectar para buscar.")));
+}
+function renderSearches() {
+  const s = $("srch"); s.innerHTML = "";
+  if (!S.keepSearches || !D.searches.length) return;
+  D.searches.forEach(t => { const b = el("button", "ch glass z", t); b.onclick = () => { $("q").value = t; go() }; s.appendChild(b) });
+  s.appendChild(btn("Borrar", () => { D.searches = []; save(); renderSearches() }));
+}
+function go() {
+  const t = $("q").value.trim(); if (!t) { $("q").focus(); return }
+  $("q").style.borderColor = ""; const id = parseId(t);
+  if (id) { $("q").value = ""; $("resBox").hidden = true; playSave(id); return }
+  if (SHORT.test(t)) { $("q").style.borderColor = "#ff8a80"; toast("Los enlaces acortados no se pueden leer desde aquí: ábrelo y copia la dirección final"); return }
+  if (/^(https?:\/\/|www\.)/i.test(t)) { $("q").style.borderColor = "#ff8a80"; toast("Ese enlace no parece de YouTube"); return }
+  search(t);
+}
+
+// ---------- Listas de vídeos ----------
+function list() {
+  let a = all();
+  if (curList) a = (D.lists[curList] || []).map(id => find(id) || {id, title:"Vídeo " + id});
+  else {
+    if (tab === "fav") a = a.filter(v => D.favs[v.id]);
+    if (S.order === "old") a = a.slice(0, VIDEOS.length).concat(a.slice(VIDEOS.length).reverse());
+    if (S.order === "az") a.sort((x, y) => x.title.localeCompare(y.title, "es"));
+    if (S.order === "za") a.sort((x, y) => y.title.localeCompare(x.title, "es"));
+    if (S.order === "fav") a = a.filter(v => D.favs[v.id]).concat(a.filter(v => !D.favs[v.id]));
+  }
+  const f = fltVal.trim().toLowerCase(); if (f) a = a.filter(v => v.title.toLowerCase().includes(f));
+  return a;
+}
+function card(v) {
+  const c = el("div", "card glass z"), b = el("button", "play"), fixed = VIDEOS.some(x => x.id === v.id);
+  b.innerHTML = '<div class="thumb"><img alt="" src="https://img.youtube.com/vi/' + v.id + '/hqdefault.jpg"></div><span class="name"></span>';
+  b.querySelector(".name").textContent = v.title; b.onclick = () => openV(v.id, v.title);
+  const s = el("button", "mini m1 glass z", D.favs[v.id] ? "\u2605" : "\u2606"); s.setAttribute("aria-label", "Favorito");
+  s.onclick = e => { e.stopPropagation(); toggleFav(v.id); render() };
+  const p = el("button", "mini m2 glass z", "+"); p.setAttribute("aria-label", "Añadir a una lista");
+  p.onclick = e => { e.stopPropagation(); listMenu(p, v.id, v.title) };
+  c.append(b, s, p);
+  if (!fixed) {
+    const d = el("button", "mini m3 glass z", "\u2715"); d.setAttribute("aria-label", "Quitar");
+    d.onclick = async e => { e.stopPropagation(); if (await confirmDel("¿Quitar «" + v.title + "» de tus vídeos?")) { D.saved = D.saved.filter(x => x.id !== v.id); delete D.favs[v.id]; save(); render() } };
+    c.appendChild(d);
+  }
+  return c;
+}
+function toggleFav(id) { D.favs[id] ? delete D.favs[id] : D.favs[id] = 1; save(); updFav() }
+function toggleList(n, id, title) {
+  if (!find(id)) D.saved.unshift({id, title:title || "Vídeo " + id});
+  const a = D.lists[n] = D.lists[n] || [], i = a.indexOf(id);
+  i < 0 ? a.push(id) : a.splice(i, 1);
+  save(); toast(i < 0 ? "Añadido a «" + n + "»" : "Quitado de «" + n + "»"); render();
+}
+function listMenu(anchor, id, title) {
+  const items = Object.keys(D.lists).map(n => [n, () => toggleList(n, id, title), (D.lists[n] || []).includes(id)]);
+  items.push(["\uFF0B Nueva lista…", async () => { const n = await askText("Nueva lista", "", "Nombre de la lista"); if (n) { D.lists[n] = D.lists[n] || []; toggleList(n, id, title) } }]);
+  popMenu(anchor, items);
+}
+
+// ---------- Pantallas principales ----------
+function renderTabs() {
+  const t = $("tabs"); t.innerHTML = "";
+  [["inicio", "Inicio"], ["fav", "Favoritos"], ["listas", "Listas"], ["hist", "Historial"]].forEach(([k, n]) => {
+    const b = el("button", "ch glass z" + (tab === k ? " on" : ""), n);
+    b.onclick = () => { tab = k; curList = null; fltVal = ""; render() }; t.appendChild(b);
+  });
+}
+function render() {
+  renderTabs(); const m = $("main"); m.innerHTML = "";
+  if (tab === "listas" && !curList) renderLists(m); else if (tab === "hist") renderHist(m); else renderVideos(m);
+  apply();
+}
+function renderVideos(m) {
+  const sec = el("div", "sec"), h = el("h2", "", curList ? "Lista: " + curList : tab === "fav" ? "Favoritos" : "Mis vídeos"), cnt = el("small", "", "");
+  h.appendChild(cnt); sec.appendChild(h);
+  if (curList) sec.append(btn("\u2190 Volver", () => { curList = null; render() }), btn("Reproducir lista", () => { if (shown.length) openV(shown[0].id, shown[0].title) }, 1));
+  const f = el("input", "in"); f.placeholder = "Filtrar vídeos"; f.value = fltVal; f.hidden = !S.showFlt; f.oninput = () => { fltVal = f.value; fill() };
+  const r = btn("Aleatorio", () => { if (shown.length) { const v = shown[Math.floor(Math.random() * shown.length)]; openV(v.id, v.title) } }); r.hidden = !S.showRnd;
+  sec.append(f, r); m.appendChild(sec);
+  const g = el("div", "grid"); g.id = "grid"; m.appendChild(g);
+  function fill() {
+    shown = list(); g.innerHTML = ""; cnt.textContent = " (" + shown.length + ")";
+    if (!shown.length) g.appendChild(msg(tab === "fav" ? "Todavía no tienes favoritos. Pulsa la estrella de un vídeo." : "No hay vídeos que coincidan."));
+    shown.forEach(v => g.appendChild(card(v)));
+  }
+  fill();
+}
+function renderLists(m) {
+  const sec = el("div", "sec"); sec.appendChild(el("h2", "", "Mis listas"));
+  sec.appendChild(btn("\uFF0B Nueva lista", async () => { const n = await askText("Nueva lista", "", "Nombre de la lista"); if (n && !D.lists[n]) { D.lists[n] = []; save(); render() } }, 1));
+  m.appendChild(sec);
+  const names = Object.keys(D.lists);
+  if (!names.length) { m.appendChild(msg("Aún no tienes listas. Crea una y añade vídeos con el botón + de cada vídeo.")); return }
+  const g = el("div", "grid");
+  names.forEach(n => {
+    const c = el("div", "lc glass z"), ids = D.lists[n], first = ids[0];
+    if (first) { const t = el("div", "thumb"); t.innerHTML = '<img alt="" src="https://img.youtube.com/vi/' + first + '/mqdefault.jpg">'; c.appendChild(t) }
+    c.append(el("h3", "", n), el("span", "rchan", ids.length + " vídeos"));
+    const b = el("div", "btns");
+    b.append(
+      btn("Abrir", () => { curList = n; fltVal = ""; render() }, 1),
+      btn("Renombrar", async () => { const x = await askText("Renombrar lista", n); if (x && x !== n && !D.lists[x]) { D.lists[x] = D.lists[n]; delete D.lists[n]; save(); render() } }),
+      btn("Borrar", async () => { if (await confirmDel("¿Borrar la lista «" + n + "»?")) { delete D.lists[n]; save(); render() } })
+    );
+    c.appendChild(b); g.appendChild(c);
+  });
+  m.appendChild(g);
+}
+function renderHist(m) {
+  const sec = el("div", "sec"); sec.appendChild(el("h2", "", "Historial"));
+  sec.appendChild(btn("Borrar historial", async () => { if (await confirmDel("¿Borrar el historial?")) { D.hist = []; save(); render() } }));
+  m.appendChild(sec);
+  if (!S.hist) { m.appendChild(msg("El historial está desactivado en Ajustes > Mis vídeos.")); return }
+  if (!D.hist.length) { m.appendChild(msg("Todavía no has visto ningún vídeo.")); return }
+  const st = el("div", "stack");
+  D.hist.forEach(h => {
+    const b = el("button", "row glass z");
+    b.innerHTML = '<div class="rthumb"><img alt="" src="https://img.youtube.com/vi/' + h.id + '/mqdefault.jpg"></div><div><div class="rtitle"></div><div class="rchan"></div></div>';
+    b.querySelector(".rtitle").textContent = h.title; b.querySelector(".rchan").textContent = new Date(h.t).toLocaleString("es-ES", {dateStyle:"medium", timeStyle:"short"});
+    b.onclick = () => openV(h.id, h.title); st.appendChild(b);
+  });
+  m.appendChild(st);
+}
+function renderAll() { apply(); render(); renderSearches() }
+
+// ---------- Reproductor ----------
+function updFav() { $("ofav").textContent = D.favs[cur] ? "\u2605" : "\u2606" }
+function record(id, title) {
+  D.hist = [{id, title, t:Date.now()}].concat(D.hist.filter(h => h.id !== id)).slice(0, S.histMax); save();
+}
+function openV(id, title) {
+  cur = id; const t = title || (find(id) || {}).title || "Vídeo " + id;
+  $("ttl").textContent = t; $("stage").innerHTML = "";
+  const f = el("iframe"), H = S.host === "nc" ? "https://www.youtube-nocookie.com" : "https://www.youtube.com", q = ["autoplay=" + (S.auto ? 1 : 0), "hl=" + S.hl];
+  if (S.mute) q.push("mute=1"); if (S.cc) q.push("cc_load_policy=1&cc_lang_pref=" + S.hl); if (S.loop) q.push("loop=1&playlist=" + id);
+  if (!S.controls) q.push("controls=0"); if (!S.kb) q.push("disablekb=1"); if (!S.fsok) q.push("fs=0");
+  if (S.host !== "min") { q.push("rel=" + (S.rel ? 1 : 0), "modestbranding=1", "playsinline=1"); if (/^https?:/.test(location.origin)) q.push("origin=" + encodeURIComponent(location.origin)); f.referrerPolicy = "strict-origin-when-cross-origin" }
+  f.src = H + "/embed/" + id + "?" + q.join("&"); f.title = t;
+  f.allow = "autoplay; encrypted-media; picture-in-picture" + (S.fsok ? "; fullscreen" : ""); f.allowFullscreen = !!S.fsok;
+  $("stage").appendChild(f); $("nbar").hidden = !S.notes; $("note2").value = D.notes[id] || "";
+  $("ov").hidden = false; $("close").focus(); updFav();
+  if (S.hist) record(id, t);
+}
+function closeV() { $("ov").hidden = true; $("stage").innerHTML = "" }
+function step(d) {
+  if (!shown.length) return;
+  let i = shown.findIndex(v => v.id === cur); i = i < 0 ? 0 : (i + d + shown.length) % shown.length; openV(shown[i].id, shown[i].title);
+}
+function playSave(id, known) {
+  let t = known || "Vídeo " + id; const ex = find(id); if (ex) t = ex.title;
+  if (!ex && S.autosave) {
+    D.saved.unshift({id, title:t}); save(); render();
+    if (!known) fetchTitle(id, r => { D.saved.forEach(x => { if (x.id === id) x.title = r }); save(); render(); if (!$("ov").hidden && cur === id) $("ttl").textContent = r });
+  } else if (!ex && !known) fetchTitle(id, r => { if (!$("ov").hidden && cur === id) $("ttl").textContent = r });
+  openV(id, t);
+}
+function nextMode() {
+  S.host = {yt:"nc", nc:"min", min:"yt"}[S.host] || "yt"; save(); openV(cur, $("ttl").textContent);
+  toast("Probando: " + ({yt:"youtube.com", nc:"youtube-nocookie.com", min:"modo simple"}[S.host]));
+}
+
+// ---------- Eventos ----------
+$("go").onclick = go;
+$("q").addEventListener("keydown", e => { if (e.key === "Enter") go() });
+$("resX").onclick = () => { $("resBox").hidden = true };
+$("cfg").onclick = () => openSettings();
+$("usr").onclick = () => user ? openSettings("acc") : openAuth("login");
+$("close").onclick = closeV; $("prev").onclick = () => step(-1); $("next").onclick = () => step(1);
+$("alt").onclick = nextMode; $("ofav").onclick = () => { toggleFav(cur); render() };
+$("olst").onclick = () => listMenu($("olst"), cur, $("ttl").textContent);
+$("copy").onclick = () => { navigator.clipboard.writeText("https://youtu.be/" + cur).then(() => toast("Enlace copiado")).catch(() => toast("No se pudo copiar")) };
+$("note2").onchange = () => { const v = $("note2").value.trim(); v ? D.notes[cur] = v : delete D.notes[cur]; save(); toast("Nota guardada") };
+document.addEventListener("keydown", e => {
+  const ty = /INPUT|TEXTAREA|SELECT/.test(e.target.tagName), ms = $("mroot").lastElementChild;
+  if (e.key === "Escape") { closeMenus(); if (ms) ms.remove(); else if (!$("ov").hidden) closeV() }
+  else if (ty || ms) return;
+  else if (!$("ov").hidden) {
+    const k = e.key.toLowerCase();
+    if (k === "arrowright") step(1); else if (k === "arrowleft") step(-1);
+    else if (k === "f") { toggleFav(cur); render() } else if (k === "l") listMenu($("olst"), cur, $("ttl").textContent); else if (k === "m") nextMode();
+  }
+  else if (e.key === "/") { e.preventDefault(); $("q").focus() }
+  else if (e.key === "?") openSettings("keys");
+  else if (e.key === ",") openSettings();
+});
+
+// ---------- Inicio ----------
+loadNS(); tab = S.startTab; apply(); render(); renderSearches();
+if (G.gate && !user) openAuth("login"); else if (!LS.get("vp_welcomed", false)) welcome();
+})();
+</script>
+</body>
+</html>
